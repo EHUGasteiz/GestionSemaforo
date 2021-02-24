@@ -9,6 +9,8 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -19,7 +21,7 @@ import javax.swing.SwingConstants;
 
 import es.ehu.eui.semaforo.model.GestorSemaforos;
 
-public class SemaforoCoches extends JFrame implements Observer {
+public class SemaforoCoches extends JFrame implements PropertyChangeListener{
 
 	private static final long serialVersionUID = -1526416068663302084L;
 	private JPanel contentPane;
@@ -51,7 +53,7 @@ public class SemaforoCoches extends JFrame implements Observer {
 	public SemaforoCoches() {
 		initialize();
 		GestorSemaforos.getGestorSemaforos().addObserver(this);
-		update(null, null);
+		propertyChange(null);
 	}
 
 	/**
@@ -145,8 +147,9 @@ public class SemaforoCoches extends JFrame implements Observer {
 		}
 	}
 
+
 	@Override
-	public void update(Observable o, Object arg) {
+	public void propertyChange(PropertyChangeEvent pEvt) {
 		GestorSemaforos gs = GestorSemaforos.getGestorSemaforos();
 		boolean estaVerde = gs.estaVerde();
 		if (!estaVerde) {
@@ -160,6 +163,7 @@ public class SemaforoCoches extends JFrame implements Observer {
 		getLblCont().setText(String.valueOf(gs.getContador()));
 
 	}
+	
 	private JLabel getLblCont() {
 		if (lblCont == null) {
 			lblCont = new JLabel("15");
@@ -171,4 +175,5 @@ public class SemaforoCoches extends JFrame implements Observer {
 		}
 		return lblCont;
 	}
+
 }

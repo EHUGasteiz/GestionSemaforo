@@ -11,9 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Observable;
-import java.util.Observer;
-
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,7 +22,7 @@ import es.ehu.eui.semaforo.model.GestorSemaforos;
 
 import javax.swing.JButton;
 
-public class SemaforoPeatones extends JFrame implements Observer {
+public class SemaforoPeatones extends JFrame implements PropertyChangeListener {
 
 	/**
 	 * 
@@ -59,7 +58,7 @@ public class SemaforoPeatones extends JFrame implements Observer {
 	public SemaforoPeatones() {
 		initialize();
 		GestorSemaforos.getGestorSemaforos().addObserver(this);
-		update(null, null);
+		propertyChange(null);
 	}
 
 	/**
@@ -159,7 +158,7 @@ public class SemaforoPeatones extends JFrame implements Observer {
 	}
 
 	@Override
-	public void update(Observable o, Object arg) {
+	public void propertyChange(PropertyChangeEvent pEvt) {
 		GestorSemaforos gs = GestorSemaforos.getGestorSemaforos();
 		boolean estaVerde = gs.estaVerde();
 		if (estaVerde) {
@@ -192,4 +191,6 @@ public class SemaforoPeatones extends JFrame implements Observer {
 		}
 		return btnPedirPaso;
 	}
+
+
 }

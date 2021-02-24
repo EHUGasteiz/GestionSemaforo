@@ -1,6 +1,7 @@
 package es.ehu.eui.semaforo.model;
 
-import java.util.Observable;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -11,15 +12,22 @@ import java.util.TimerTask;
  * @author mikel
  *
  */
-public class GestorSemaforos  extends Observable{
+public class GestorSemaforos  {
 	private static GestorSemaforos mGestorSemaforos = new GestorSemaforos();
 	private boolean estaVerde; // Indica si el semaforo esta verde para los peatones o no
 	private static final int PERIODO = 15;
 	private int cont;
 	private Timer timer = null;
 	
+	// Para gestionar los observadores registrador y las notificaciones
+	private PropertyChangeSupport support;
+	
 	private GestorSemaforos ()
 	{
+		// Crear objeto para gestionar los observadores
+		support = new PropertyChangeSupport(this);
+		
+		// Temporizador
 		estaVerde = false;
 		cont = PERIODO;
 		TimerTask timerTask = new TimerTask() {
@@ -39,6 +47,15 @@ public class GestorSemaforos  extends Observable{
 	 */
 	public static GestorSemaforos getGestorSemaforos() {
 		return mGestorSemaforos;
+	}
+	
+	/**
+	 * addPropertyChangeListener
+	 * Registra un nuevo listener
+	 * @param pList el listener
+	 */
+	public void addObserver(PropertyChangeListener pList) {
+		support.addPropertyChangeListener(pList);
 	}
 	
 	/**
@@ -68,8 +85,7 @@ public class GestorSemaforos  extends Observable{
 			cont = PERIODO;
 			estaVerde = true;
 			// Notificar el cambio
-			setChanged();
-			notifyObservers();
+			support.firePropertyChange("gestor", this.estaVerde, this.cont);
 		}
 	}
 	
@@ -83,8 +99,6 @@ public class GestorSemaforos  extends Observable{
 			estaVerde = !estaVerde;
 		}
 		// Notifica el cambio en el estado
-		setChanged();
-		notifyObservers();
-		
+		support.firePropertyChange("gestor", this.estaVerde, this.cont);		
 	}
 }
