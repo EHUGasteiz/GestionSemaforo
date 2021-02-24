@@ -1,4 +1,4 @@
-package es.ehu.eui.semaforo.app;
+package es.ehu.eui.semaforo.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -9,15 +9,17 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-public class SemaforoCoches extends JFrame  {
+import es.ehu.eui.semaforo.model.GestorSemaforos;
+
+public class SemaforoCoches extends JFrame implements Observer {
 
 	private static final long serialVersionUID = -1526416068663302084L;
 	private JPanel contentPane;
@@ -26,11 +28,6 @@ public class SemaforoCoches extends JFrame  {
 	private LuzSemaforo luzRoja = null;
 	private Controlador controlador = null;
 	private JLabel lblCont;
-	// Para controlar el turno en el semaforo
-	private static final int PERIODO = 15;
-	private int cont = PERIODO;
-	private boolean estaVerde = false;
-	private Timer timer = null;
 
 	/**
 	 * Launch the application.
@@ -53,42 +50,9 @@ public class SemaforoCoches extends JFrame  {
 	 */
 	public SemaforoCoches() {
 		initialize();
-		// controlar el semaforo
-		TimerTask timerTask = new TimerTask() {
-			
-			@Override
-			public void run() {
-				actualizarCont();
-			}
-
-			
-		};
-		timer = new Timer();
-		timer.scheduleAtFixedRate(timerTask, 0,1000);
-	
+		GestorSemaforos.getGestorSemaforos().addObserver(this);
+		update(null, null);
 	}
-	
-	// Actualizar el tiempo y el semaforo
-	private void actualizarCont() {
-		// Actualizar estamo
-		cont--;
-		if (cont==0) {
-			cont = PERIODO;
-			estaVerde = !estaVerde;
-		}
-		// Reflejar nuevo estado
-		if (!estaVerde) {
-			getLblCont().setForeground(Color.GREEN);
-		}
-		else {
-			getLblCont().setForeground(Color.RED);		
-		}
-		getLuzVerde().setActivo(!estaVerde);
-		getLuzRoja().setActivo(estaVerde);
-		getLblCont().setText(String.valueOf(cont));
-		
-	}
-	
 
 	/**
 	 * Inicializa los componentes de la ventana
@@ -181,7 +145,21 @@ public class SemaforoCoches extends JFrame  {
 		}
 	}
 
-	
+	@Override
+	public void update(Observable o, Object arg) {
+		GestorSemaforos gs = GestorSemaforos.getGestorSemaforos();
+		boolean estaVerde = gs.estaVerde();
+		if (!estaVerde) {
+			getLblCont().setForeground(Color.GREEN);
+		}
+		else {
+			getLblCont().setForeground(Color.RED);		
+		}
+		getLuzVerde().setActivo(!estaVerde);
+		getLuzRoja().setActivo(estaVerde);
+		getLblCont().setText(String.valueOf(gs.getContador()));
+
+	}
 	private JLabel getLblCont() {
 		if (lblCont == null) {
 			lblCont = new JLabel("15");

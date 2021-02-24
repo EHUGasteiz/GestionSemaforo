@@ -1,4 +1,4 @@
-package es.ehu.eui.semaforo.app;
+package es.ehu.eui.semaforo.view;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
